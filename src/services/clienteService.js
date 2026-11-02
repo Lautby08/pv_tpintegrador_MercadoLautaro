@@ -12,9 +12,17 @@ const saveLS = (data) => {
     localStorage.setItem(LS_KEY, JSON.stringify(data));
 };
 
+export const getNextAvailableId = (clientes) => {
+    const maxId = clientes
+        .map(c => Number(c.id))
+        .filter(n => !isNaN(n))
+        .reduce((max, n) => Math.max(max, n), 0);
+
+    return maxId + 1;
+};
+
 export const getClientes = async () => {
     const guardados = getLS();
-
 
     if (guardados.length > 0) {
         return guardados.filter(c => c.visible !== false);
@@ -35,7 +43,6 @@ export const getClientes = async () => {
 export const agregarCliente = async (cliente) => {
     const clientes = getLS();
 
-
     try {
         const { data } = await axios.post(URL, cliente);
         console.log("POST /users - Respuesta API:", data);
@@ -45,7 +52,7 @@ export const agregarCliente = async (cliente) => {
 
     const nuevo = {
         ...cliente,
-        id: getSmallestAvailableId(clientes),
+        id: getNextAvailableId(clientes),
         visible: true
     };
 
@@ -56,7 +63,6 @@ export const agregarCliente = async (cliente) => {
 };
 
 export const eliminarCliente = async (id) => {
-
     try {
         const { data } = await axios.delete(`${URL}/${id}`);
         console.log("DELETE /users/" + id + " - Respuesta API:", data);
@@ -78,7 +84,6 @@ export const eliminarCliente = async (id) => {
 };
 
 export const getClientePorId = async (id) => {
-
     try {
         const { data } = await axios.get(`${URL}/${id}`);
         console.log("GET /users/" + id + " - Respuesta API:", data);
@@ -86,24 +91,7 @@ export const getClientePorId = async (id) => {
         console.warn("GET individual a la API falló, se usa LocalStorage:", err.message);
     }
 
-
     const clientes = getLS();
-    return clientes.find(c => Number(c.id) === Number(id));
-};
 
-export const getSmallestAvailableId = (clientes) => {
-    const ids = clientes
-        .filter(c => c.visible !== false)
-        .map(c => Number(c.id))
-        .filter(n => !isNaN(n))
-        .sort((a, b) => a - b);
-
-    let id = 1;
-
-    for (const actual of ids) {
-        if (actual === id) id++;
-        else if (actual > id) break;
-    }
-
-    return id;
+    return clientes.find(c => Number(c.id) === Number(id) && c.visible !== false);
 };
