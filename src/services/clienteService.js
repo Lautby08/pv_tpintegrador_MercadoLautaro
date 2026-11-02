@@ -3,6 +3,8 @@ import axios from "axios";
 const URL = "https://fakestoreapi.com/users";
 const LS_KEY = "clientes";
 
+
+
 const getLS = () => {
     const data = localStorage.getItem(LS_KEY);
     return data ? JSON.parse(data) : [];
@@ -81,6 +83,11 @@ export const eliminarCliente = async (id) => {
     saveLS(actualizados);
 
     return true;
+};
+
+export const reiniciarClientes = async () => {
+    localStorage.removeItem(LS_KEY);
+    return await getClientes();
 };
 
 export const getClientePorId = async (id) => {
