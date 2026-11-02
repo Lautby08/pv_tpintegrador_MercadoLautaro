@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormularioCliente from "../components/common/FormularioCliente";
 import '../css/ListaClientes.css';
-import { getClientes, agregarCliente } from "../services/clienteService";
+import { getClientes, agregarCliente, reiniciarClientes} from "../services/clienteService";
 import {
     Table, TableHead, TableBody, TableRow, TableCell,
-    CircularProgress, Alert
+    CircularProgress, Alert, Button
 } from '@mui/material';
 
 const Clientes = () => {
@@ -49,6 +49,19 @@ const Clientes = () => {
         
         <div id="formulario">
             <h1>Ahora estas en Clientes</h1>
+
+            <div style={{ margin: '15px 0' }}>
+                <Button
+                    variant="outlined"
+                    color="warning"
+                    onClick={async () => {
+                        const listaRestaurada = await reiniciarClientes();
+                        setClientes(listaRestaurada);
+                    }}
+                    >
+                    Restablecer datos
+                </Button>
+             </div>
             
             <FormularioCliente
             onAddCliente={async (nuevo)=>{
@@ -88,7 +101,7 @@ const Clientes = () => {
     </select>
 
 </div>
-
+            
 
             
             <div className="tabla-clientes-container">
